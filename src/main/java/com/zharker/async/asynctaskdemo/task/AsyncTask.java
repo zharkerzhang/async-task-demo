@@ -5,7 +5,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
-import java.util.Random;
 import java.util.concurrent.Future;
 
 @Slf4j
@@ -48,4 +47,15 @@ public class AsyncTask {
         }
         return new AsyncResult<>(costMillseconds);
     }
+
+    @Async("taskExecutor")
+    public void dying(int maxCostSecond) throws InterruptedException {
+        long costMillseconds = Math.round(maxCostSecond*Math.random()*TH);
+        log.info("dying cost:{} millseconds",costMillseconds);
+        Thread.sleep(costMillseconds);
+        if(true){
+            throw new IllegalArgumentException("die error");
+        }
+    }
+
 }

@@ -35,14 +35,32 @@ public class AsyncTaskDemoApplication implements ApplicationRunner {
         Future<Long> watchingF = task.watching(10);
         Future<Long> listeningF = task.listening(10);
         Future<Long> illingF = task.illing(10);
+        task.dying(5);
 
         while (!eatingF.isDone() || !watchingF.isDone() || !listeningF.isDone() || !illingF.isDone()) {
             Thread.sleep(100);
         }
+        long eatCost = futureGet(eatingF);
+        long watchCost = futureGet(watchingF);
+        long listenCost = futureGet(listeningF);
+        long illCost = futureGet(illingF);
 
         Instant endTime = Instant.now();
-        long totalCost = Duration.between(beginTime,endTime).toMillis();
-        log.info("all task complete, total cost milliseconds:{}",totalCost);
+        long totalCost = Duration.between(beginTime, endTime).toMillis();
+        log.info("all task complete, total cost milliseconds:{}", totalCost);
 
+    }
+
+    private long futureGet(Future<Long> future) {
+        long result = 0L;
+        if (future.isDone()) {
+            try {
+                result = future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                log.error(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }
